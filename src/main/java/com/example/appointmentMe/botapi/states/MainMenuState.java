@@ -30,7 +30,7 @@ public class MainMenuState implements BotState {
 
     @Override
     public State getNextState() {
-        return State.CHOICE_OF_DATE;    //    CORRECT STATE - choiceCity
+        return State.FILL_NAME;    //    CORRECT STATE - choiceCity
     }
 
     @Override

@@ -1,0 +1,23 @@
+package com.example.appointmentMe.botapi.states;
+
+import com.example.appointmentMe.botapi.state.BotState;
+import com.example.appointmentMe.botapi.state.State;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.Update;
+
+public class NoFreeWorkTimeState implements BotState {
+    @Override
+    public State getState() {
+        return null;
+    }
+
+    @Override
+    public State getNextState() {
+        return null;
+    }
+
+    @Override
+    public BotApiMethod<?> process(Update update) {
+        return null;
+    }
+}

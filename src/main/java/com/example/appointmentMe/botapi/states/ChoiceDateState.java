@@ -3,6 +3,7 @@ package com.example.appointmentMe.botapi.states;
 import com.example.appointmentMe.botapi.state.BotState;
 import com.example.appointmentMe.botapi.state.CallbackProcessor;
 import com.example.appointmentMe.botapi.state.State;
+import com.example.appointmentMe.model.Appointment;
 import com.example.appointmentMe.service.AppointmentCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -14,26 +15,25 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.StringJoiner;
 
-@Slf4j
 @Component
-public class ChoiceDateState implements BotState, CallbackProcessor {
-
+@Slf4j
+public class ChoiceDateState implements CallbackProcessor {
     private static final LocalDate LOCAL_DATE = LocalDate.now();
-    public static final int DAYS_IN_CURRENT_MONTH = LOCAL_DATE.lengthOfMonth();
     private static final int DAYS_IN_WEEK = 7;
-
     private final AppointmentCache cache;
 
     public ChoiceDateState(AppointmentCache cache) { //  CORRECT STATE - choiceTime
         this.cache = cache;
     }
-
     @Override
     public State getState() {
         return State.CHOICE_OF_DATE;
@@ -55,60 +55,67 @@ public class ChoiceDateState implements BotState, CallbackProcessor {
 
     @Override
     public void processCallback(CallbackQuery callback) {
-//        TODO: make return type BotApiMethod<?> with 'EditMessageReplyMarkup' method
+        Appointment draft = cache.getDraft(callback.getFrom().getUserName());
+        String dateStr = callback.getData();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        draft.setAppointmentDate(parseAppointmentDate(dateStr, dateFormat));
         log.info("Callback accepting mock. Callback data: {}", callback.getData());
+    }
+
+    private Date parseAppointmentDate(String dateStr, SimpleDateFormat dateFormat) {
+        Date result = null;
+        try {
+            result = dateFormat.parse(dateStr);
+        } catch (ParseException e) {
+            log.error("Date parsing error: ", e);
+        }
+
+        return result;
     }
 
     private ReplyKeyboard getReplyMarkup() {
         return InlineKeyboardMarkup.builder()
                 .keyboardRow(getWeekdayRow())
-                .keyboard(getCalendarKeyboard())
-                .keyboardRow(getControlRow())
+                .keyboardRow(getCalendarKeyboard())
                 .build();
     }
 
-    private List<List<InlineKeyboardButton>> getCalendarKeyboard() {
-        DayOfWeek firstMonthDay = LOCAL_DATE.withDayOfMonth(1).getDayOfWeek();
-        int rowsCount = getRowsCount(firstMonthDay);
-        int offset = firstMonthDay.ordinal();
-
-        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
-        for (int i = 0; i < rowsCount; i++) {
-            List<InlineKeyboardButton> buttonsRow = new ArrayList<>();
-            for (int j = 0; j < DAYS_IN_WEEK; j++) {
-                InlineKeyboardButton.InlineKeyboardButtonBuilder buttonBuilder = InlineKeyboardButton.builder();
-                int dayOfMonth = (j + 1 - offset) + (i * DAYS_IN_WEEK);
-                String buttonData = String.valueOf(dayOfMonth);
-                if (dayOfMonth <= 0 || dayOfMonth > DAYS_IN_CURRENT_MONTH) {
-                    buttonData = " ";
-                }
-                buttonsRow.add(
-                        buttonBuilder
-                                .text(buttonData)
-                                .callbackData(buttonData)
-                                .build()
-                );
-            }
-            keyboard.add(buttonsRow);
+    private List<InlineKeyboardButton> getCalendarKeyboard() {
+        int firstWeekDay = getFirstWeekDay();
+        List<InlineKeyboardButton> keyboard = new ArrayList<>();
+        InlineKeyboardButton.InlineKeyboardButtonBuilder buttonBuilder = InlineKeyboardButton.builder();
+        for (int i = 0; i < DAYS_IN_WEEK; i++) {
+            int currentDayValue = firstWeekDay + i;
+            keyboard.add(
+                    buttonBuilder
+                            .text(String.valueOf(currentDayValue))
+                            .callbackData(getCallbackData(currentDayValue))
+                            .build()
+            );
         }
 
         return keyboard;
     }
 
-    private int getRowsCount(DayOfWeek firstMonthDay) {
-        int rowsCount = DAYS_IN_CURRENT_MONTH % DAYS_IN_WEEK == 0 ?
-                DAYS_IN_CURRENT_MONTH / DAYS_IN_WEEK : DAYS_IN_CURRENT_MONTH / DAYS_IN_WEEK + 1;
-
-        if (!Month.FEBRUARY.equals(LOCAL_DATE.getMonth())) {
-            return rowsCount;
+    private int getFirstWeekDay() {
+        DayOfWeek currentWeekDay = LOCAL_DATE.getDayOfWeek();
+        int currentMonthDay = LOCAL_DATE.getDayOfMonth();
+        int currentWeekDayOrdinal = currentWeekDay.ordinal();
+        if (currentWeekDayOrdinal > DayOfWeek.THURSDAY.ordinal()) {
+            return currentMonthDay + DAYS_IN_WEEK - currentWeekDayOrdinal;
         }
 
-        int daysInFebruary = 28;
-        if (!DayOfWeek.MONDAY.equals(firstMonthDay) && DAYS_IN_CURRENT_MONTH == daysInFebruary) {
-            rowsCount++;
-        }
+        return DayOfWeek.MONDAY == currentWeekDay ?
+                currentMonthDay :
+                currentMonthDay - currentWeekDayOrdinal;
+    }
 
-        return rowsCount;
+    private String getCallbackData(int currentDay) {
+        StringJoiner stringJoiner = new StringJoiner(".");
+        return stringJoiner.add(String.valueOf(currentDay))
+                .add(String.valueOf(LOCAL_DATE.getMonthValue()))
+                .add(String.valueOf(LOCAL_DATE.getYear()))
+                .toString();
     }
 
     private List<InlineKeyboardButton> getWeekdayRow() {
@@ -126,15 +133,5 @@ public class ChoiceDateState implements BotState, CallbackProcessor {
         return weekdayRow;
     }
 
-    private List<InlineKeyboardButton> getControlRow() {
-        List<InlineKeyboardButton> controlRow = new ArrayList<>();
-        InlineKeyboardButton.InlineKeyboardButtonBuilder buttonBuilder = InlineKeyboardButton.builder();
-
-        controlRow.add(buttonBuilder.text("<<<").callbackData("getPrevMonth").build());
-        controlRow.add(buttonBuilder.text(LOCAL_DATE.getMonth().name() + " " + LOCAL_DATE.getYear()).callbackData("getNextMonth").build());
-        controlRow.add(buttonBuilder.text(">>>").callbackData("getNextMonth").build());
-
-        return controlRow;
-    }
-
 }
+

@@ -8,5 +8,7 @@ public enum State {
     CHOICE_OF_DATE,
     CHOICE_OF_CITY,
     CHOICE_OF_TIME,
-    FILL_NAME
+    FILL_NAME,
+    FINAL_STATE,
+    NO_FREE_WORK_TIME
 }
