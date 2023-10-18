@@ -1,23 +1,23 @@
 CREATE TABLE usr (
     id bigserial primary key,
     name varchar(128) not null,
+    representation_name varchar(128) not null,
     telegram_nick varchar(128) not null,
-    telegram_id bigserial not null
+    telegram_id bigserial not null,
+    notified boolean not null default false
 );
 
 CREATE TABLE appointment (
     id bigserial primary key,
     user_id bigserial references usr(id),
-    client_name varchar(128) not null,
-    appoint_date timestamp with time zone,
-    draft boolean,
+    appointment_date timestamp with time zone,
     create_timestamp timestamp with time zone
 );
 
 CREATE TABLE cities (
     id bigserial primary key,
     city varchar(128) not null,
-    timezoneOffset integer not null,
+    timezone_offset integer not null
 );
 
 INSERT INTO cities VALUES (1, 'Калининград', 2);

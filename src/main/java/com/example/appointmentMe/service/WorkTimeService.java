@@ -2,9 +2,10 @@ package com.example.appointmentMe.service;
 
 import com.example.appointmentMe.model.WorkTime;
 import com.example.appointmentMe.repository.WorkTimeRepository;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -16,11 +17,11 @@ public class WorkTimeService {
         this.workTimeRepository = workTimeRepository;
     }
 
-    public List<WorkTime> getAllWorkTime() {
-        List<WorkTime> result = new ArrayList<>();
-        workTimeRepository.findAll()
-                .iterator()
-                .forEachRemaining(result::add);
-        return result;
+    public List<WorkTime> getFreeWorkTimeByStartDate(Date startDate) {
+        return workTimeRepository.findByIsFreeTrueAndStartWorkTimeBetween(startDate, DateUtils.addDays(startDate, 1));
+    }
+
+    public void setWorkTime(WorkTime workTime) {
+        workTimeRepository.save(workTime);
     }
 }

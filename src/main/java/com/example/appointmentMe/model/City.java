@@ -1,6 +1,7 @@
 package com.example.appointmentMe.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
@@ -8,7 +9,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "cities")
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class City {
 
     @Id
@@ -16,9 +17,9 @@ public class City {
     private Long id;
 
     @Column(name = "city")
-    private final String city;
+    private String city;
 
     @Column(name = "timezone_offset")
-    private final int timezoneOffset;
+    private Integer timezoneOffset;
 
 }

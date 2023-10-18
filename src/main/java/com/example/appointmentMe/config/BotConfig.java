@@ -1,19 +1,25 @@
 package com.example.appointmentMe.config;
 
-import com.example.appointmentMe.botapi.state.BotState;
-import com.example.appointmentMe.botapi.state.State;
-import lombok.Data;
+import com.example.appointmentMe.bot.command.Command;
+import com.example.appointmentMe.bot.command.CommandProcessor;
+import com.example.appointmentMe.bot.state.CallbackProcessor;
+import com.example.appointmentMe.bot.state.MessageProcessor;
+import com.example.appointmentMe.bot.state.State;
+import com.example.appointmentMe.bot.state.StateProcessor;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 
 @Configuration
-@Data
+@Getter
 public class BotConfig {
 
     @Value("${telegram.bot.name}")
@@ -21,17 +27,29 @@ public class BotConfig {
     @Value("${telegram.bot.token}")
     private String token;
 
-//    @Bean
-//    public Map<State, BotState> allStates() {
-//        ApplicationContext ctx = new AnnotationConfigApplicationContext();
-//
-//        Map<State, BotState> beansMap = new HashMap<>();
-//        beansMap.put(State.MAIN_MENU, (BotState) ctx.getBean(State.CHOICE_OF_CITY.name()));
-//        beansMap.put(State.CHOICE_OF_CITY, (BotState) ctx.getBean(State.CHOICE_OF_DATE.name()));
-//        beansMap.put(State.CHOICE_OF_DATE, (BotState) ctx.getBean(State.CHOICE_OF_TIME.name()));
-//        beansMap.put(State.CHOICE_OF_TIME, (BotState) ctx.getBean(State.FILL_NAME.name()));
-//        beansMap.put(State.FILL_NAME, (BotState) ctx.getBean(State.MAIN_MENU.name()));
-//
-//        return beansMap;
-//    }
+    @Bean
+    public Map<State, StateProcessor> stateProcessors(List<StateProcessor> processors) {
+        return processors.stream().collect(Collectors.toMap(StateProcessor::getState, Function.identity()));
+    }
+
+    @Bean
+    public Map<State, CallbackProcessor> callbackProcessors(List<CallbackProcessor> processors) {
+        return processors.stream().collect(Collectors.toMap(CallbackProcessor::getState, Function.identity()));
+    }
+
+    @Bean
+    public Map<State, MessageProcessor> messageProcessors(List<MessageProcessor> processors) {
+        return processors.stream().collect(Collectors.toMap(MessageProcessor::getState, Function.identity()));
+    }
+
+    @Bean
+    public Map<Command, CommandProcessor> commandProcessors(List<CommandProcessor> processors) {
+        return processors.stream().collect(Collectors.toMap(CommandProcessor::getName, Function.identity()));
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
 }
