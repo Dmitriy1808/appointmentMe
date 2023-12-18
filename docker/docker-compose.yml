@@ -60,20 +60,29 @@ services:
     restart: unless-stopped
 
   nginx:
-    ports:
-      - "8080:8080/tcp"
-    restart: unless-stopped
     image: nginx:1.25.0
-    #environment:
-      # Настройки таймзоны
-      #- TZ=${TZ}
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
     volumes:
-      - nginx_config:/etc/nginx/conf.d/default.conf:ro
-      - nginx_log:/var/log/nginx
+      - nginx_config:/etc/nginx/conf.d
+#      - certs dir
+
+  certbot:
+    image: certbot:latest
+    container_name: certbot
+    restart: unless-stopped
+    depends_on:
+      - nginx
+#    volumes:
+#      -
+#    command:
+#      -
 
 volumes:
   appoint-me-data:
   nginx_config:
-  nginx_log:
 
 # Нужен NGINX
