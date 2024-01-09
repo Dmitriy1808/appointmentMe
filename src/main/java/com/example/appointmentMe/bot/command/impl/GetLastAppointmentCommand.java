@@ -44,18 +44,12 @@ public class GetLastAppointmentCommand implements CommandProcessor {
         }
 
         Appointment lastAppointment = lastAppointmentOptional.get();
-        String[] formattedDateParts = ZonedDateTime.ofInstant(lastAppointment.getAppointmentDate().toInstant(), Utils.DEFAULT_ZONE_ID)
-                .minusHours(Utils.DEFAULT_TIMEZONE_OFFSET)
-                .plusHours(lastAppointment.getUser().getTimezoneOffset())
-                .format(DateTimeFormatter.ofPattern(Utils.FULL_DATE_PATTERN))
-                .split(StringUtils.SPACE);
-
-        String[] formattedDateParts2 = Utils.formatAppointmentsForReplyMessage(List.of(lastAppointment))
+        String[] formattedDateParts = Utils.formatSingleAppointmentForReplyMessage(lastAppointment)
                 .split(StringUtils.SPACE);
 
         return SendMessage.builder()
                 .chatId(chatId)
-                .text(REPLY_MESSAGE_TEMPLATE.formatted(formattedDateParts2[0], formattedDateParts2[1]))
+                .text(REPLY_MESSAGE_TEMPLATE.formatted(formattedDateParts[0], formattedDateParts[1]))
                 .build();
     }
 

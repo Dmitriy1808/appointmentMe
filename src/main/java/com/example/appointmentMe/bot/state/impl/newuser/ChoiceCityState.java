@@ -19,6 +19,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Component
 public class ChoiceCityState implements MessageProcessor {
 
+    private static final String CHOICE_CITY_TEXT_TEMPLATE = "Введите Ваш город";
     private final AppointmentCache cache;
     private final CityService cityService;
 
@@ -29,7 +30,6 @@ public class ChoiceCityState implements MessageProcessor {
 
     @Override
     public void processMessage(Message message) {
-//        TODO почему-то cityService.getCityTimezoneOffset всегда отдает дефолтную таймзону
         int timezoneOffset = (!message.hasText() || message.getText() == null)
                 ? cityService.getDefaultTimezoneOffset()
                 : cityService.getCityTimezoneOffset(message.getText());
@@ -44,7 +44,7 @@ public class ChoiceCityState implements MessageProcessor {
     public BotApiMethod<?> process(Update update) {
         return SendMessage.builder()
                 .chatId(Utils.getChatId(update))
-                .text("Input your city")
+                .text(CHOICE_CITY_TEXT_TEMPLATE)
                 .build();
     }
 

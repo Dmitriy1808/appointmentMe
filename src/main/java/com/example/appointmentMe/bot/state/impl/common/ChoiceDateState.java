@@ -1,4 +1,4 @@
-package com.example.appointmentMe.bot.state.impl.newuser;
+package com.example.appointmentMe.bot.state.impl.common;
 
 import com.example.appointmentMe.bot.Utils;
 import com.example.appointmentMe.bot.state.CallbackProcessor;
@@ -26,6 +26,7 @@ import java.util.StringJoiner;
 public class ChoiceDateState implements CallbackProcessor {
     private static final LocalDate LOCAL_DATE = LocalDate.now();
     private static final int DAYS_IN_WEEK = DayOfWeek.values().length;
+    private static final String CHOOSE_DATE_FOR_APPOINTMENT_TEXT_TEMPLATE = "Выберите, пожалуйста, дату, на которую хотите записаться";
     private final AppointmentCache cache;
 
     public ChoiceDateState(AppointmentCache cache) { //  CORRECT STATE - choiceTime
@@ -41,7 +42,7 @@ public class ChoiceDateState implements CallbackProcessor {
         return SendMessage.builder()
                 .chatId(Utils.getChatId(update))
                 .replyMarkup(getReplyMarkup())
-                .text("Choose date for appointment? please")
+                .text(CHOOSE_DATE_FOR_APPOINTMENT_TEXT_TEMPLATE)
                 .build();
     }
 

@@ -63,7 +63,7 @@ public class BotStateManager {
             stateProcessorFactory.getCallbackProcessorByState(userState).processCallback(update.getCallbackQuery());
             AppointmentInfo maybeUpdatedAppointmentInfo = appointmentCache.getAppointmentDraftByNickname(Utils.getUsernameFromUpdate(update));
             State currentState = maybeUpdatedAppointmentInfo.getState();
-            State nextState = StateFactory.getNextStateFor(maybeUpdatedAppointmentInfo.getState())
+            State nextState = StateFactory.getNextStateFor(currentState)
                     .orElse(getActualInitStateByCurrentState(currentState));
             maybeUpdatedAppointmentInfo.setState(nextState);
             return stateProcessorFactory.getStateProcessorByState(nextState).process(update);

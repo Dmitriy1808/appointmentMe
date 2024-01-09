@@ -20,7 +20,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Slf4j
 public class FillNameState implements MessageProcessor {
 
-    private static final String NAME_REQUEST_TEXT = "Введите свое имя";
+    private static final String NAME_REQUEST_TEXT = "Введите Ваше имя";
 
     private final UserService userService;
     private final AppointmentCache cache;

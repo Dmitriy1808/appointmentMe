@@ -1,4 +1,4 @@
-package com.example.appointmentMe.bot.state.impl.newuser;
+package com.example.appointmentMe.bot.state.impl.common;
 
 import com.example.appointmentMe.bot.Utils;
 import com.example.appointmentMe.bot.notification.Notifier;
@@ -22,7 +22,7 @@ import java.util.List;
 public class FinalState implements StateProcessor {
 
     private static final String MESSAGE_TEMPLATE = """
-            You're appointed at %s (%s)""";
+            Вы записаны на %s (%s)""";
 
     private final AppointmentCache cache;
     private final Notifier notifier;

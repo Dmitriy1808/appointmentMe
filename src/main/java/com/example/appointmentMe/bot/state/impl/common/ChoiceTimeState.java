@@ -1,4 +1,4 @@
-package com.example.appointmentMe.bot.state.impl.newuser;
+package com.example.appointmentMe.bot.state.impl.common;
 
 import com.example.appointmentMe.bot.Utils;
 import com.example.appointmentMe.bot.factory.StateFactory;
@@ -37,8 +37,8 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class ChoiceTimeState implements CallbackProcessor {
-    private static final String CHOOSE_TIME_MESSAGE = "Choose appointment time";
-    private static final String NO_FREE_TIME_MESSAGE = "No free time";
+    private static final String CHOOSE_TIME_MESSAGE = "Выберите время";
+    private static final String NO_FREE_TIME_MESSAGE = "На эту дату время приема отсутствует";
     private static final String TIME_REPRESENTATION_DELIMITER = " - ";
     private static final String WORK_TIME_RANGE_TEMPLATE = """
             %s - %s (%s)""";
@@ -148,14 +148,10 @@ public class ChoiceTimeState implements CallbackProcessor {
         InlineKeyboardMarkup.InlineKeyboardMarkupBuilder keyboardBuilder = InlineKeyboardMarkup.builder();
         workTime.forEach(time -> {
             int timezoneOffset = user.getTimezoneOffset();
-            String formattedStartWorkTime = getFormattedWorkTime(time.getStartWorkTime(), timezoneOffset);
             String timeRepresentation = WORK_TIME_RANGE_TEMPLATE.formatted(
                     getFormattedWorkTime(time.getStartWorkTime(), timezoneOffset),
                     getFormattedWorkTime(time.getEndWorkTime(), timezoneOffset),
                     user.getCity());
-//                    formattedStartWorkTime + TIME_REPRESENTATION_DELIMITER
-//                    + getFormattedWorkTime(time.getEndWorkTime(), timezoneOffset)
-//                    + " (" + user.getCity() + ")";
             keyboardBuilder.keyboardRow(List.of(InlineKeyboardButton.builder()
                     .text(timeRepresentation)
                     .callbackData(time.getStartWorkTime().toString())

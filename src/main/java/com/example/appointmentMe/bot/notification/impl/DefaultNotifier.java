@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 @Primary
 public class DefaultNotifier implements Notifier {
     private static final String CLIENT_NOTIFICATION_TEMPLATE = """
-            CLIENT_NOTIFICATION_TEMPLATE""";
+            Напоминаем Вам про запись %s""";
     private static final String WORKER_NOTIFICATION_TEMPLATE = """
             WORKER_NOTIFICATION_TEMPLATE""";
     private static final int HOURS_IN_DAY = 24;
@@ -86,7 +86,7 @@ public class DefaultNotifier implements Notifier {
     //    TODO Написать шаблоны для разынх типов уведомлений
     private String getNotificationText(Appointment appointment, NotifyAction action) {
         return NotifyAction.CLIENT_AND_WORKER_NOTIFY.equals(action)
-                ? CLIENT_NOTIFICATION_TEMPLATE
+                ? CLIENT_NOTIFICATION_TEMPLATE.formatted(appointment.getAppointmentDate().toString())
                 : WORKER_NOTIFICATION_TEMPLATE;
     }
 
