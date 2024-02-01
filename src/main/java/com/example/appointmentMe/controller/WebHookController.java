@@ -18,26 +18,13 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @RequiredArgsConstructor
-@RestController(value = "/api/v1/")
+@RestController(value = "/api")
 public class WebHookController {
 
     private final AppointMeBot bot;
-    private final AppointmentCacheCleaner cacheCleaner;
-    private final AppointmentCache appointmentCache;
 
-    @PostMapping(value = "/")
+    @PostMapping(value = "/client")
     public BotApiMethod<?> onReceive(@RequestBody Update update) {
         return bot.onWebhookUpdateReceived(update);
-    }
-
-    @GetMapping(value = "/cache/clear")
-    public ResponseEntity<?> clearCache() {
-        cacheCleaner.clean();
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping(value = "/cache/size")
-    public Long cacheSize() {
-        return appointmentCache.getSize();
     }
 }

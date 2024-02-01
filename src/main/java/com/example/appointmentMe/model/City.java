@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "cities")
+@Table(name = "city")
 @Getter
 @NoArgsConstructor
 public class City {

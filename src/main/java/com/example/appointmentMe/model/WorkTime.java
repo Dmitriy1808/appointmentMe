@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "specialist")
+@Table(name = "work_time")
 @Data
 public class WorkTime {
 
