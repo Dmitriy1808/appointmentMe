@@ -44,6 +44,6 @@ public class AppointMeBot extends TelegramWebhookBot {
 
     @Override
     public String getBotPath() {
-        return null;
+        return "/client";
     }
 }
