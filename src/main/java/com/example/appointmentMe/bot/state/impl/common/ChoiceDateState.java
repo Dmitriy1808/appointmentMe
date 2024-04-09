@@ -1,10 +1,11 @@
 package com.example.appointmentMe.bot.state.impl.common;
 
 import com.example.appointmentMe.bot.Utils;
+import com.example.appointmentMe.bot.factory.StateFactory;
 import com.example.appointmentMe.bot.state.CallbackProcessor;
 import com.example.appointmentMe.bot.state.State;
-import com.example.appointmentMe.model.Appointment;
 import com.example.appointmentMe.service.appointment.cache.AppointmentCache;
+import com.example.appointmentMe.service.appointment.cache.AppointmentInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -17,10 +18,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.time.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Component
@@ -45,13 +43,20 @@ public class ChoiceDateState implements CallbackProcessor {
                 .build();
     }
 
-//    TODO Есть смысл писать в бота сообщение с выбранной датой
     @Override
     public void processCallback(CallbackQuery callback) {
-        Appointment draft = cache.getAppointmentDraftByNickname(callback.getFrom().getUserName()).getAppointment();
+        AppointmentInfo draftInfo = cache.getAppointmentDraftByNickname(callback.getFrom().getUserName());
+        boolean isMissclickToWeekdayButton = Arrays.stream(DayOfWeek.values())
+                .anyMatch(dayOfWeek -> callback.getData().equals(dayOfWeek.name()));
+        if (isMissclickToWeekdayButton) {
+            StateFactory.getPrevStateFor(getState()).ifPresent(draftInfo::setState);
+            log.info("Missclick");
+            return;
+        }
+
         String dateStr = callback.getData();
         Date formattedDate = Date.from(LocalDateTime.parse(dateStr).toInstant(ZoneOffset.UTC));
-        draft.setAppointmentDate(formattedDate);
+        draftInfo.getAppointment().setAppointmentDate(formattedDate);
         log.info("Callback data: {}", callback.getData());
     }
 
@@ -123,13 +128,13 @@ public class ChoiceDateState implements CallbackProcessor {
         List<InlineKeyboardButton> weekdayRow = new ArrayList<>();
         InlineKeyboardButton.InlineKeyboardButtonBuilder buttonBuilder = InlineKeyboardButton.builder();
 
-        weekdayRow.add(buttonBuilder.text("Mon").callbackData(getCallbackData(getCurrentDayValue(0))).build());
-        weekdayRow.add(buttonBuilder.text("Tue").callbackData(getCallbackData(getCurrentDayValue(1))).build());
-        weekdayRow.add(buttonBuilder.text("Wen").callbackData(getCallbackData(getCurrentDayValue(2))).build());
-        weekdayRow.add(buttonBuilder.text("Thu").callbackData(getCallbackData(getCurrentDayValue(3))).build());
-        weekdayRow.add(buttonBuilder.text("Fri").callbackData(getCallbackData(getCurrentDayValue(4))).build());
-        weekdayRow.add(buttonBuilder.text("Sat").callbackData(getCallbackData(getCurrentDayValue(5))).build());
-        weekdayRow.add(buttonBuilder.text("Sun").callbackData(getCallbackData(getCurrentDayValue(6))).build());
+        weekdayRow.add(buttonBuilder.text("Mon").callbackData(DayOfWeek.MONDAY.name()).build());
+        weekdayRow.add(buttonBuilder.text("Tue").callbackData(DayOfWeek.TUESDAY.name()).build());
+        weekdayRow.add(buttonBuilder.text("Wen").callbackData(DayOfWeek.WEDNESDAY.name()).build());
+        weekdayRow.add(buttonBuilder.text("Thu").callbackData(DayOfWeek.THURSDAY.name()).build());
+        weekdayRow.add(buttonBuilder.text("Fri").callbackData(DayOfWeek.FRIDAY.name()).build());
+        weekdayRow.add(buttonBuilder.text("Sat").callbackData(DayOfWeek.SATURDAY.name()).build());
+        weekdayRow.add(buttonBuilder.text("Sun").callbackData(DayOfWeek.SUNDAY.name()).build());
 
         return weekdayRow;
     }
