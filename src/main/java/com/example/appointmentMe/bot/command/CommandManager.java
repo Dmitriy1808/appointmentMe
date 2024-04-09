@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 public class CommandManager {

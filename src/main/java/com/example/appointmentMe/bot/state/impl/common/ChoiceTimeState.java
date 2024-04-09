@@ -39,11 +39,8 @@ import java.util.stream.Collectors;
 public class ChoiceTimeState implements CallbackProcessor {
     private static final String CHOOSE_TIME_MESSAGE = "Выберите время";
     private static final String NO_FREE_TIME_MESSAGE = "На эту дату время приема отсутствует";
-    private static final String TIME_REPRESENTATION_DELIMITER = " - ";
-    private static final String WORK_TIME_RANGE_TEMPLATE = """
-            %s - %s (%s)""";
-    private static final String WORK_TIME_TEMPLATE = """
-            %s:%s""";
+    private static final String WORK_TIME_RANGE_TEMPLATE = "%s - %s (%s)";
+    private static final String WORK_TIME_TEMPLATE = "%s:%s";
     private static boolean NO_FREE_TIME = false;
     private static final Calendar CALENDAR = Calendar.getInstance();
 

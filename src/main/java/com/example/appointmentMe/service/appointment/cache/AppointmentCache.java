@@ -43,6 +43,10 @@ public class AppointmentCache {
                 : State.FILL_NAME;
     }
 
+    public boolean appointmentDraftExists(String clientNickname) {
+        return DRAFT_CACHE.containsKey(clientNickname);
+    }
+
     @Transactional
     public Appointment saveDraft(Appointment appointmentDraft) {
         User user = appointmentDraft.getUser();
