@@ -1,9 +1,8 @@
 package com.example.appointmentMe.schedule.impl;
 
 import com.example.appointmentMe.schedule.Cleaner;
-import com.example.appointmentMe.service.appointment.AppointmentCache;
+import com.example.appointmentMe.service.appointment.cache.AppointmentCache;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -27,7 +26,7 @@ public class AppointmentCacheCleaner implements Cleaner {
     @Override
     public void clean() {
         if (!cleanerEnable) {
-            log.debug("{} turned off. Check property '{}'", this.getClass().getSimpleName(), ENABLE_CLEANER_PROPERTY_NAME);
+            log.info("{} turned off. Check property '{}'", this.getClass().getSimpleName(), ENABLE_CLEANER_PROPERTY_NAME);
             return;
         }
 
