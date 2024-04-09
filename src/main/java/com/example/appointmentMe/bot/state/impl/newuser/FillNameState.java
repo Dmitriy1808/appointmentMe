@@ -4,7 +4,7 @@ import com.example.appointmentMe.bot.Utils;
 import com.example.appointmentMe.bot.state.MessageProcessor;
 import com.example.appointmentMe.bot.state.State;
 import com.example.appointmentMe.model.User;
-import com.example.appointmentMe.service.appointment.AppointmentCache;
+import com.example.appointmentMe.service.appointment.cache.AppointmentCache;
 import com.example.appointmentMe.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +47,6 @@ public class FillNameState implements MessageProcessor {
             user.setRepresentationName(clientName);
             user.setTelegramNick(clientNickname);
             user.setTelegramId(client.getId());
-//            userService.save(user);
         }
 
         cache.getAppointmentDraftByNickname(clientNickname)

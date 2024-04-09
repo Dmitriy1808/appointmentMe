@@ -8,8 +8,8 @@ import com.example.appointmentMe.bot.state.State;
 import com.example.appointmentMe.model.Appointment;
 import com.example.appointmentMe.model.User;
 import com.example.appointmentMe.service.UserService;
-import com.example.appointmentMe.service.appointment.AppointmentCache;
-import com.example.appointmentMe.service.appointment.AppointmentInfo;
+import com.example.appointmentMe.service.appointment.cache.AppointmentCache;
+import com.example.appointmentMe.service.appointment.cache.AppointmentInfo;
 import com.example.appointmentMe.service.appointment.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +50,6 @@ public class AppointmentsManageState implements CallbackProcessor {
 
     @Override
     public BotApiMethod<?> process(Update update) {
-//        TODO подумать над тем, чтобы выпилить команду GET_ALL_APPOINTMENTS
         User user = userService.getUserByNickname(Utils.getUsernameFromUpdate(update));
         List<Appointment> allAppointments = appointmentService.getCurrentWeekAppointmentsByUser(user);
         long chatId = Utils.getChatId(update);

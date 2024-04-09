@@ -17,12 +17,6 @@ public class StateFactory {
                 : NewClientPipelineFactory.getNextStateFor(state);
     }
 
-//    private static boolean isStateFromNewClientPipeline(State state) {
-////        TODO Выглядит не очень, стоит еще подумать над архитектурой состояний, это оставляю для демонстрации концепции
-//        return Arrays.stream(NewClientPipeline.values())
-//                .anyMatch(newClientPipelineState -> newClientPipelineState.name().equals(state.name()));
-//    }
-
     public Optional<State> getPrevStateFor(State state) {
         return EXISTS_CLIENT_PIPELINE_STATES.contains(state)
                 ? ExistsClientPipelineFactory.getPrevStateFor(state)

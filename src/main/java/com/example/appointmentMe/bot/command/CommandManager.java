@@ -26,8 +26,8 @@ public class CommandManager {
             case "/start" -> commandProcessors.get(Command.START);
             case "/help" -> commandProcessors.get(Command.HELP);
             case "/about" -> commandProcessors.get(Command.ABOUT);
-            case "/getlastappointment" -> commandProcessors.get(Command.GET_LAST_APPOINTMENT);
-            case "/getallappointments" -> commandProcessors.get(Command.GET_ALL_APPOINTMENTS);
+            case "/lastappointment" -> commandProcessors.get(Command.GET_LAST_APPOINTMENT);
+            case "/allappointments" -> commandProcessors.get(Command.GET_ALL_APPOINTMENTS);
             default -> throw new UnknownCommandException("Unknown command: " + commandText);
         };
     }

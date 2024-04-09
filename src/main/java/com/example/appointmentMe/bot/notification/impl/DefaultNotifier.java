@@ -6,12 +6,9 @@ import com.example.appointmentMe.bot.notification.UserParams;
 import com.example.appointmentMe.model.Appointment;
 import com.example.appointmentMe.model.User;
 import com.example.appointmentMe.service.UserService;
-import com.example.appointmentMe.service.appointment.AppointmentCache;
 import com.example.appointmentMe.service.appointment.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpEntity;
@@ -44,8 +41,7 @@ public class DefaultNotifier implements Notifier {
     private String botToken;
     @Value(value = "${bot.owner.id:}")
     private long botOwnerId;
-    private String botOwnerNotifyUrl = """
-            https://api.telegram.org/bot%s/sendMessage""";
+    private String botOwnerNotifyUrl = "https://api.telegram.org/bot%s/sendMessage";
 
     private final RestTemplate restTemplate;
     private final AppointmentService appointmentService;

@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @RequiredArgsConstructor
-@RestController(value = "/callback")
+@RestController
 public class WebHookController {
 
     private final AppointMeBot bot;

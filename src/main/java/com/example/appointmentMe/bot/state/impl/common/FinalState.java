@@ -6,16 +6,12 @@ import com.example.appointmentMe.bot.notification.NotifyAction;
 import com.example.appointmentMe.bot.state.State;
 import com.example.appointmentMe.bot.state.StateProcessor;
 import com.example.appointmentMe.model.Appointment;
-import com.example.appointmentMe.service.appointment.AppointmentCache;
+import com.example.appointmentMe.service.appointment.cache.AppointmentCache;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Component

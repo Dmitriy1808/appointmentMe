@@ -1,4 +1,4 @@
-package com.example.appointmentMe.service.appointment;
+package com.example.appointmentMe.service.appointment.cache;
 
 import com.example.appointmentMe.bot.state.State;
 import com.example.appointmentMe.model.Appointment;

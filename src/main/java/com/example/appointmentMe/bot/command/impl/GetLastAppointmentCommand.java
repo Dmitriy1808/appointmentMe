@@ -13,15 +13,11 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Optional;
 
 @Component
 public class GetLastAppointmentCommand implements CommandProcessor {
-    private static final String REPLY_MESSAGE_TEMPLATE = """
-            Вы записаны на %s в %s""";
+    private static final String REPLY_MESSAGE_TEMPLATE = "Вы записаны на %s в %s";
 
     private final UserService userService;
     private final AppointmentService appointmentService;
@@ -34,7 +30,8 @@ public class GetLastAppointmentCommand implements CommandProcessor {
     @Override
     public BotApiMethod<?> processCommand(Update update) {
         User user = userService.getUserByNickname(Utils.getUsernameFromUpdate(update));
-        Optional<Appointment> lastAppointmentOptional = appointmentService.getLastAppointmentByUser(user);
+        Optional<Appointment> lastAppointmentOptional = appointmentService.getLastAppointmentByUser(user)
+                .filter(appointment -> appointment.getAppointmentDate() != null);
         long chatId = Utils.getChatId(update);
         if (lastAppointmentOptional.isEmpty()) {
             return SendMessage.builder()

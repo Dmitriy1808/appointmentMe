@@ -4,7 +4,8 @@ import com.example.appointmentMe.bot.Utils;
 import com.example.appointmentMe.bot.state.CallbackProcessor;
 import com.example.appointmentMe.bot.state.State;
 import com.example.appointmentMe.model.Appointment;
-import com.example.appointmentMe.service.appointment.AppointmentCache;
+import com.example.appointmentMe.service.appointment.cache.AppointmentCache;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -21,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.StringJoiner;
 
+@RequiredArgsConstructor
 @Component
 @Slf4j
 public class ChoiceDateState implements CallbackProcessor {
@@ -29,9 +31,6 @@ public class ChoiceDateState implements CallbackProcessor {
     private static final String CHOOSE_DATE_FOR_APPOINTMENT_TEXT_TEMPLATE = "Выберите, пожалуйста, дату, на которую хотите записаться";
     private final AppointmentCache cache;
 
-    public ChoiceDateState(AppointmentCache cache) { //  CORRECT STATE - choiceTime
-        this.cache = cache;
-    }
     @Override
     public State getState() {
         return State.CHOICE_OF_DATE;

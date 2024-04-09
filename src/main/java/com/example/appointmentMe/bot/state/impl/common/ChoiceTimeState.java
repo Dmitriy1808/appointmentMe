@@ -7,9 +7,9 @@ import com.example.appointmentMe.bot.state.State;
 import com.example.appointmentMe.model.Appointment;
 import com.example.appointmentMe.model.User;
 import com.example.appointmentMe.model.WorkTime;
-import com.example.appointmentMe.service.appointment.AppointmentCache;
+import com.example.appointmentMe.service.appointment.cache.AppointmentCache;
 import com.example.appointmentMe.service.WorkTimeService;
-import com.example.appointmentMe.service.appointment.AppointmentInfo;
+import com.example.appointmentMe.service.appointment.cache.AppointmentInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
@@ -73,7 +73,7 @@ public class ChoiceTimeState implements CallbackProcessor {
         log.info("Time choice successfully. Appointment draft - {}", draft);
     }
 
-    private static Date getPreparedAdditionalDateFromTelegramUser(CallbackQuery callback) {
+    private Date getPreparedAdditionalDateFromTelegramUser(CallbackQuery callback) {
         Date additionalDate = null;
         try {
             additionalDate = DateUtils.parseDate(callback.getData(), "yyyy-MM-dd HH:mm:ss.S");
