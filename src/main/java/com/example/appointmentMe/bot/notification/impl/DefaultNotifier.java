@@ -7,6 +7,7 @@ import com.example.appointmentMe.model.Appointment;
 import com.example.appointmentMe.model.User;
 import com.example.appointmentMe.service.UserService;
 import com.example.appointmentMe.service.appointment.AppointmentService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +20,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -46,7 +46,6 @@ public class DefaultNotifier implements Notifier {
     private final RestTemplate restTemplate;
     private final AppointmentService appointmentService;
     private final UserService userService;
-
     @PostConstruct
     public void init() {
         botOwnerNotifyUrl = botOwnerNotifyUrl.formatted(botToken);

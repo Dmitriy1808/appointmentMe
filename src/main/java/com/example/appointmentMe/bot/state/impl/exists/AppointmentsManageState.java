@@ -1,16 +1,15 @@
 package com.example.appointmentMe.bot.state.impl.exists;
 
 import com.example.appointmentMe.bot.Utils;
-import com.example.appointmentMe.bot.factory.StateFactory;
 import com.example.appointmentMe.bot.state.CallbackProcessor;
 import com.example.appointmentMe.bot.state.NavigationAction;
 import com.example.appointmentMe.bot.state.State;
 import com.example.appointmentMe.model.Appointment;
 import com.example.appointmentMe.model.User;
 import com.example.appointmentMe.service.UserService;
+import com.example.appointmentMe.service.appointment.AppointmentService;
 import com.example.appointmentMe.service.appointment.cache.AppointmentCache;
 import com.example.appointmentMe.service.appointment.cache.AppointmentInfo;
-import com.example.appointmentMe.service.appointment.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -39,7 +38,7 @@ public class AppointmentsManageState implements CallbackProcessor {
     public void processCallback(CallbackQuery callback) {
         if (NavigationAction.BACK.name().equals(callback.getData())) {
             AppointmentInfo draftInfo = cache.getAppointmentDraftByNickname(callback.getFrom().getUserName());
-            StateFactory.getPrevStateFor(State.EXISTING_USER_DETECTED).ifPresent(draftInfo::setState);
+            draftInfo.setPrevStateFor(State.EXISTING_USER_DETECTED);
         }
     }
 
@@ -67,7 +66,7 @@ public class AppointmentsManageState implements CallbackProcessor {
                 .build();
     }
 
-    private ReplyKeyboard getReplyMarkup() {
+    public ReplyKeyboard getReplyMarkup() {
         InlineKeyboardButton backButton = InlineKeyboardButton.builder()
                 .text(NavigationAction.BACK.getTitle())
                 .callbackData(NavigationAction.BACK.name())

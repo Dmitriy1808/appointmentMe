@@ -1,16 +1,15 @@
 package com.example.appointmentMe.bot.state.impl.exists;
 
 import com.example.appointmentMe.bot.Utils;
-import com.example.appointmentMe.bot.factory.StateFactory;
 import com.example.appointmentMe.bot.state.CallbackProcessor;
 import com.example.appointmentMe.bot.state.NavigationAction;
 import com.example.appointmentMe.bot.state.State;
 import com.example.appointmentMe.model.Appointment;
 import com.example.appointmentMe.model.User;
 import com.example.appointmentMe.service.UserService;
+import com.example.appointmentMe.service.appointment.AppointmentService;
 import com.example.appointmentMe.service.appointment.cache.AppointmentCache;
 import com.example.appointmentMe.service.appointment.cache.AppointmentInfo;
-import com.example.appointmentMe.service.appointment.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -30,6 +29,7 @@ import java.util.List;
 public class DeclineAppointmentState implements CallbackProcessor {
 
     private static final String DECLINE_APPOINTMENT_MESSAGE_TEXT = "Записи, доступные для удаления";
+    private static User USER_FROM_UPDATE;
 
     private final UserService userService;
     private final AppointmentCache cache;
@@ -39,12 +39,12 @@ public class DeclineAppointmentState implements CallbackProcessor {
     public void processCallback(CallbackQuery callback) {
         AppointmentInfo draftInfo = cache.getAppointmentDraftByNickname(callback.getFrom().getUserName());
         if (NavigationAction.BACK.name().equals(callback.getData())) {
-            StateFactory.getPrevStateFor(State.EXISTING_USER_DETECTED).ifPresent(draftInfo::setState);
+            draftInfo.setPrevStateFor(State.EXISTING_USER_DETECTED);
             return;
         }
 
         appointmentService.declineAppointmentById(Long.parseLong(callback.getData()));
-        StateFactory.getPrevStateFor(getState()).ifPresent(draftInfo::setState);
+        draftInfo.setPrevState();
     }
 
     @Override
@@ -54,16 +54,17 @@ public class DeclineAppointmentState implements CallbackProcessor {
 
     @Override
     public BotApiMethod<?> process(Update update) {
+        USER_FROM_UPDATE = userService.getUserByNickname(Utils.getUsernameFromUpdate(update));
         return SendMessage.builder()
                 .chatId(Utils.getChatId(update))
                 .text(DECLINE_APPOINTMENT_MESSAGE_TEXT)
-                .replyMarkup(getReplyMarkup(Utils.getUsernameFromUpdate(update)))
+                .replyMarkup(getReplyMarkup())
                 .build();
     }
 
-    private ReplyKeyboard getReplyMarkup(String username) {
-        User user = userService.getUserByNickname(username);
-        List<Appointment> declineCandidates = appointmentService.getCurrentWeekAppointmentsByUser(user);
+    @Override
+    public ReplyKeyboard getReplyMarkup() {
+        List<Appointment> declineCandidates = appointmentService.getCurrentWeekAppointmentsByUser(USER_FROM_UPDATE);
         InlineKeyboardMarkup.InlineKeyboardMarkupBuilder resultKeyboardBuilder = InlineKeyboardMarkup.builder();
         for (Appointment appointment : declineCandidates) {
             String appointmentContent = Utils.formatSingleAppointmentForReplyMessage(appointment);

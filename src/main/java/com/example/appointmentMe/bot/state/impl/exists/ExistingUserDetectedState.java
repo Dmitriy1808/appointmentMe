@@ -26,8 +26,7 @@ import java.util.List;
 @Slf4j
 public class ExistingUserDetectedState implements CallbackProcessor {
 
-    private static final String GREETING_MESSAGE_TEMPLATE = """
-            Здравствуйте, %s!""";
+    private static final String GREETING_MESSAGE_TEMPLATE = "Здравствуйте, %s!";
 
     private final UserService userService;
     private final AppointmentCache cache;
@@ -36,7 +35,7 @@ public class ExistingUserDetectedState implements CallbackProcessor {
     public void processCallback(CallbackQuery callback) {
         if (State.CHOICE_OF_DATE.name().equals(callback.getData())) {
             AppointmentInfo draftInfo = cache.getAppointmentDraftByNickname(callback.getFrom().getUserName());
-            StateFactory.getPrevStateFor(State.CHOICE_OF_DATE).ifPresent(draftInfo::setState);
+            draftInfo.setPrevStateFor(State.CHOICE_OF_DATE);
             log.info("Change state from {} to {}", getState().name(), State.CHOICE_OF_DATE.name());
         }
     }
@@ -56,7 +55,7 @@ public class ExistingUserDetectedState implements CallbackProcessor {
                 .build();
     }
 
-    private ReplyKeyboard getReplyMarkup() {
+    public ReplyKeyboard getReplyMarkup() {
         InlineKeyboardButton choiceDateButton = InlineKeyboardButton.builder()
                 .text("Выбрать дату")
                 .callbackData(State.CHOICE_OF_DATE.name())

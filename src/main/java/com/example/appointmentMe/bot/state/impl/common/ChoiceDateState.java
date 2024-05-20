@@ -1,7 +1,6 @@
 package com.example.appointmentMe.bot.state.impl.common;
 
 import com.example.appointmentMe.bot.Utils;
-import com.example.appointmentMe.bot.factory.StateFactory;
 import com.example.appointmentMe.bot.state.CallbackProcessor;
 import com.example.appointmentMe.bot.state.State;
 import com.example.appointmentMe.service.appointment.cache.AppointmentCache;
@@ -49,7 +48,7 @@ public class ChoiceDateState implements CallbackProcessor {
         boolean isMissclickToWeekdayButton = Arrays.stream(DayOfWeek.values())
                 .anyMatch(dayOfWeek -> callback.getData().equals(dayOfWeek.name()));
         if (isMissclickToWeekdayButton) {
-            StateFactory.getPrevStateFor(getState()).ifPresent(draftInfo::setState);
+            draftInfo.setPrevState();
             log.info("Missclick");
             return;
         }
@@ -60,7 +59,7 @@ public class ChoiceDateState implements CallbackProcessor {
         log.info("Callback data: {}", callback.getData());
     }
 
-    private ReplyKeyboard getReplyMarkup() {
+    public ReplyKeyboard getReplyMarkup() {
         return InlineKeyboardMarkup.builder()
                 .keyboardRow(getWeekdayRow())
                 .keyboardRow(getCalendarKeyboard())

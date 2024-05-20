@@ -16,7 +16,19 @@ public class AppointmentInfo {
     private State state;
 
     public void setNextState() {
-        StateFactory.getNextStateFor(getState()).ifPresent(this::setState);
+        this.setState(StateFactory.getNextStateFor(getState()));
+    }
+
+    public void setNextStateFor(State state) {
+        this.setState(StateFactory.getNextStateFor(state));
+    }
+
+    public void setPrevState() {
+        this.setState(StateFactory.getPrevStateFor(getState()));
+    }
+
+    public void setPrevStateFor(State state) {
+        this.setState(StateFactory.getPrevStateFor(state));
     }
 
 }

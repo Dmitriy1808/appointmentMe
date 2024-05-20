@@ -1,14 +1,12 @@
 package com.example.appointmentMe.bot.state.impl.common;
 
 import com.example.appointmentMe.bot.Utils;
-import com.example.appointmentMe.bot.factory.StateFactory;
 import com.example.appointmentMe.bot.state.CallbackProcessor;
 import com.example.appointmentMe.bot.state.State;
 import com.example.appointmentMe.model.Appointment;
-import com.example.appointmentMe.model.User;
 import com.example.appointmentMe.model.WorkTime;
-import com.example.appointmentMe.service.appointment.cache.AppointmentCache;
 import com.example.appointmentMe.service.WorkTimeService;
+import com.example.appointmentMe.service.appointment.cache.AppointmentCache;
 import com.example.appointmentMe.service.appointment.cache.AppointmentInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +42,11 @@ public class ChoiceTimeState implements CallbackProcessor {
     private static boolean NO_FREE_TIME = false;
     private static final Calendar CALENDAR = Calendar.getInstance();
 
+//    TODO это костыль, нужен дополнительный компонент, который будет хранить в себе доп парметры
+    private static List<WorkTime> WORK_TIME_LIST;
+    private static int CLIENT_TIMEZONE_OFFSET;
+    private static String CLIENT_CITY;
+
     private final AppointmentCache cache;
     private final WorkTimeService workTimeService;
     @Value("${bot.owner.url:}")
@@ -58,7 +61,7 @@ public class ChoiceTimeState implements CallbackProcessor {
     public void processCallback(CallbackQuery callback) {
         AppointmentInfo draftInfo = cache.getAppointmentDraftByNickname(callback.getFrom().getUserName());
         if (NO_FREE_TIME) {
-            StateFactory.getPrevStateFor(State.CHOICE_OF_DATE).ifPresent(draftInfo::setState);
+            draftInfo.setPrevStateFor(State.CHOICE_OF_DATE);
             log.info("No free time, change state from {} to {}", getState().name(), State.CHOICE_OF_DATE.name());
             return;
         }
@@ -84,9 +87,11 @@ public class ChoiceTimeState implements CallbackProcessor {
     @Override
     public BotApiMethod<?> process(Update update) {
         Appointment draft = cache.getAppointmentDraftByNickname(Utils.getUsernameFromUpdate(update)).getAppointment();
-        List<WorkTime> workTime = workTimeService.getFreeWorkTimeByStartDate(draft.getAppointmentDate());
         SendMessage.SendMessageBuilder sendMessageBuilder = SendMessage.builder().chatId(Utils.getChatId(update));
-        NO_FREE_TIME = checkDayOffset(draft, workTime);
+        WORK_TIME_LIST = workTimeService.getFreeWorkTimeByStartDate(draft.getAppointmentDate());
+        CLIENT_TIMEZONE_OFFSET = draft.getUser().getTimezoneOffset();
+        CLIENT_CITY = draft.getUser().getCity();
+        NO_FREE_TIME = checkDayOffset(draft, WORK_TIME_LIST);
         if (NO_FREE_TIME) {
             return sendMessageBuilder
                     .replyMarkup(getNoFreeTimeReplyMarkup())
@@ -95,7 +100,7 @@ public class ChoiceTimeState implements CallbackProcessor {
         }
 
         return sendMessageBuilder
-                .replyMarkup(getReplyMarkup(workTime, draft.getUser()))
+                .replyMarkup(getReplyMarkup())
                 .text(CHOOSE_TIME_MESSAGE)
                 .build();
     }
@@ -110,17 +115,6 @@ public class ChoiceTimeState implements CallbackProcessor {
                 .filter(time -> time.getDayOfMonth() > LocalDate.ofInstant(
                         Instant.now(), Utils.DEFAULT_ZONE_ID).getDayOfMonth())
                 .map(time -> time.format(DateTimeFormatter.ofPattern(Utils.TIME_WITHOUT_DATE_PATTERN)))
-                .collect(Collectors.toSet())
-                .isEmpty();
-    }
-
-    private boolean checkToday(Appointment draft, List<WorkTime> workTime) {
-        return workTime.stream()
-                .map(time -> ZonedDateTime.ofInstant(time.getStartWorkTime().toInstant(), Utils.DEFAULT_ZONE_ID)
-                        .minusHours(Utils.DEFAULT_TIMEZONE_OFFSET)
-                        .plusHours(draft.getUser().getTimezoneOffset()))
-                .filter(time -> time.getDayOfMonth() == ZonedDateTime.ofInstant(
-                        draft.getAppointmentDate().toInstant(), Utils.DEFAULT_ZONE_ID).getDayOfMonth())
                 .collect(Collectors.toSet())
                 .isEmpty();
     }
@@ -141,14 +135,15 @@ public class ChoiceTimeState implements CallbackProcessor {
     }
 
 //    TODO В ночное время формат времени 3:0 - 4:0
-    private ReplyKeyboard getReplyMarkup(List<WorkTime> workTime, User user) {
+    @Override
+    public ReplyKeyboard getReplyMarkup() {
         InlineKeyboardMarkup.InlineKeyboardMarkupBuilder keyboardBuilder = InlineKeyboardMarkup.builder();
-        workTime.forEach(time -> {
-            int timezoneOffset = user.getTimezoneOffset();
+        WORK_TIME_LIST.forEach(time -> {
+            int timezoneOffset = CLIENT_TIMEZONE_OFFSET;
             String timeRepresentation = WORK_TIME_RANGE_TEMPLATE.formatted(
                     getFormattedWorkTime(time.getStartWorkTime(), timezoneOffset),
                     getFormattedWorkTime(time.getEndWorkTime(), timezoneOffset),
-                    user.getCity());
+                    CLIENT_CITY);
             keyboardBuilder.keyboardRow(List.of(InlineKeyboardButton.builder()
                     .text(timeRepresentation)
                     .callbackData(time.getStartWorkTime().toString())
