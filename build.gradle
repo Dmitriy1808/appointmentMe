@@ -7,6 +7,9 @@ plugins {
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
+//rootProject.tasks.jar.enabled = false
+bootJar.enabled = false
+
 java {
     sourceCompatibility = '17'
 }
@@ -22,29 +25,29 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-// https://mvnrepository.com/artifact/org.springframework/spring-context
-    implementation 'org.springframework:spring-context:6.1.6'
-
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-
-    // https://mvnrepository.com/artifact/org.postgresql/postgresql
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
-    // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
-    implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.17.0'
-    // https://mvnrepository.com/artifact/org.telegram/telegrambots
-    implementation group: 'org.telegram', name: 'telegrambots', version: '6.1.0'
-
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
-    // https://mvnrepository.com/artifact/org.mockito/mockito-core
-    testImplementation 'org.mockito:mockito-core:5.11.0'
-    // https://mvnrepository.com/artifact/org.testcontainers/postgresql
-    testImplementation 'org.testcontainers:postgresql:1.19.7'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//    implementation 'org.springframework.boot:spring-boot-starter-web'
+//// https://mvnrepository.com/artifact/org.springframework/spring-context
+//    implementation 'org.springframework:spring-context:6.1.6'
+//
+//    compileOnly 'org.projectlombok:lombok'
+//    annotationProcessor 'org.projectlombok:lombok'
+//
+//    // https://mvnrepository.com/artifact/org.postgresql/postgresql
+//    implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
+//    // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
+//    implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.17.0'
+//    // https://mvnrepository.com/artifact/org.telegram/telegrambots
+//    implementation group: 'org.telegram', name: 'telegrambots', version: '6.1.0'
+//
+//
+//    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+//    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+//    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+//    // https://mvnrepository.com/artifact/org.mockito/mockito-core
+//    testImplementation 'org.mockito:mockito-core:5.11.0'
+//    // https://mvnrepository.com/artifact/org.testcontainers/postgresql
+//    testImplementation 'org.testcontainers:postgresql:1.19.7'
 }
 
 tasks.named('test') {

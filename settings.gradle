@@ -1,4 +1,2 @@
 rootProject.name = 'appointMe'
-include 'client-bot'
-include 'admin-bot'
-
+include ('client-bot', 'admin-bot')
